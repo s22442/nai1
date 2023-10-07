@@ -4,6 +4,7 @@ from easyAI import AI_Player, Human_Player, Negamax, TwoPlayerGame
 
 TABLE_WIDTH = 10
 TABLE_HEIGHT = 10
+WINNING_STRIKE = 5
 
 
 class Piece(Enum):
@@ -35,6 +36,50 @@ class XOBrainer(TwoPlayerGame):
         self.table = [[] for _ in range(TABLE_WIDTH)]
         self.player1_piece_pool = PLAYER_1_PIECE_POOL
         self.player2_piece_pool = PLAYER_2_PIECE_POOL
+
+        self._build_winning_combinations()
+
+    def _build_winning_combinations(self):
+        self.winning_combinations = []
+
+        # all horizontal combinations
+        for i in range(TABLE_WIDTH - WINNING_STRIKE + 1):
+            for j in range(TABLE_HEIGHT):
+                self.winning_combinations.append(
+                    [[i + k, j] for k in range(WINNING_STRIKE)]
+                )
+
+        # all vertical combinations
+        for i in range(TABLE_WIDTH):
+            for j in range(TABLE_HEIGHT - WINNING_STRIKE + 1):
+                self.winning_combinations.append(
+                    [[i, j + k] for k in range(WINNING_STRIKE)]
+                )
+
+        # all diagonal combinations
+        for i in range(TABLE_WIDTH - WINNING_STRIKE + 1):
+            for j in range(TABLE_HEIGHT - WINNING_STRIKE + 1):
+                self.winning_combinations.append(
+                    [[i + k, j + k] for k in range(WINNING_STRIKE)]
+                )
+
+        for i in range(WINNING_STRIKE, TABLE_WIDTH):
+            for j in range(TABLE_HEIGHT - WINNING_STRIKE + 1):
+                self.winning_combinations.append(
+                    [[i - k, j + k] for k in range(WINNING_STRIKE)]
+                )
+
+        for i in range(TABLE_WIDTH - WINNING_STRIKE + 1):
+            for j in range(WINNING_STRIKE, TABLE_HEIGHT):
+                self.winning_combinations.append(
+                    [[i + k, j - k] for k in range(WINNING_STRIKE)]
+                )
+
+        for i in range(WINNING_STRIKE, TABLE_WIDTH):
+            for j in range(WINNING_STRIKE, TABLE_HEIGHT):
+                self.winning_combinations.append(
+                    [[i - k, j - k] for k in range(WINNING_STRIKE)]
+                )
 
     def possible_moves(self):
         available_colors = []
@@ -80,9 +125,11 @@ class XOBrainer(TwoPlayerGame):
             Piece.GREEN_O, Piece.GREEN_X
         ]
 
-        # TODO
+        for combination in self.winning_combinations:
+            if all(self.table[i][j] in wining_pieces for i, j in combination):
+                return True
 
-        return True
+        return False
 
     def is_over(self):
         return self.win()
