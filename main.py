@@ -37,8 +37,8 @@ class XOBrainer(TwoPlayerGame):
             [None for _ in range(TABLE_HEIGHT)]
             for _ in range(TABLE_WIDTH)
         ]
-        self.player1_piece_pool = PLAYER_1_PIECE_POOL
-        self.player2_piece_pool = PLAYER_2_PIECE_POOL
+        self.player1_piece_pool = PLAYER_1_PIECE_POOL.copy()
+        self.player2_piece_pool = PLAYER_2_PIECE_POOL.copy()
 
         self._build_winning_combinations()
 
@@ -126,9 +126,9 @@ class XOBrainer(TwoPlayerGame):
 
         if len(pool) == 0:
             if self.current_player == 1:
-                self.player1_piece_pool = PLAYER_1_PIECE_POOL
+                self.player1_piece_pool = PLAYER_1_PIECE_POOL.copy()
             else:
-                self.player2_piece_pool = PLAYER_2_PIECE_POOL
+                self.player2_piece_pool = PLAYER_2_PIECE_POOL.copy()
 
     def win(self):
         wining_pieces = [
