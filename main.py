@@ -118,6 +118,15 @@ class XOBrainer(TwoPlayerGame):
 
         self.table[i][j] = piece
 
+        pool = self.player1_piece_pool if self.nplayer == 1 else self.player2_piece_pool
+        pool.remove(piece)
+
+        if len(pool) == 0:
+            if self.nplayer == 1:
+                self.player1_piece_pool = PLAYER_1_PIECE_POOL
+            else:
+                self.player2_piece_pool = PLAYER_2_PIECE_POOL
+
     def win(self):
         wining_pieces = [
             Piece.PINK_O, Piece.PINK_X
