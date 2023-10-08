@@ -4,7 +4,12 @@ from easyAI import AI_Player, Human_Player, Negamax, TwoPlayerGame
 
 TABLE_WIDTH = 10
 TABLE_HEIGHT = 10
+CELL_WIDTH = 5
 WINNING_STRIKE = 5
+
+GREEN = '\033[32m'  # Green Text
+PINK = '\033[35m'  # Pink Text
+ENDC = '\033[m'  # reset to the defaults
 
 
 class Piece(Enum):
@@ -37,8 +42,8 @@ class XOBrainer(TwoPlayerGame):
             [None for _ in range(TABLE_HEIGHT)]
             for _ in range(TABLE_WIDTH)
         ]
-        self.player1_piece_pool = PLAYER_1_PIECE_POOL
-        self.player2_piece_pool = PLAYER_2_PIECE_POOL
+        self.player1_piece_pool = PLAYER_1_PIECE_POOL.copy()
+        self.player2_piece_pool = PLAYER_2_PIECE_POOL.copy()
 
         self._build_winning_combinations()
 
@@ -109,7 +114,7 @@ class XOBrainer(TwoPlayerGame):
         return moves
 
     def make_move(self, move):
-        color = int(move[0])
+        color = move[0]
         i = int(move[1])
         j = int(move[2])
 
@@ -126,9 +131,9 @@ class XOBrainer(TwoPlayerGame):
 
         if len(pool) == 0:
             if self.current_player == 1:
-                self.player1_piece_pool = PLAYER_1_PIECE_POOL
+                self.player1_piece_pool = PLAYER_1_PIECE_POOL.copy()
             else:
-                self.player2_piece_pool = PLAYER_2_PIECE_POOL
+                self.player2_piece_pool = PLAYER_2_PIECE_POOL.copy()
 
     def win(self):
         wining_pieces = [
@@ -153,13 +158,34 @@ class XOBrainer(TwoPlayerGame):
         return self.win()
 
     def show(self):
-        # TODO
-        pass
+        print("GAME STATE:")
+        print("-" * CELL_WIDTH * TABLE_WIDTH)
+        for i in range(TABLE_WIDTH):
+            print("|", end="")
+            for j in range(TABLE_HEIGHT):
+                symbol = self.table[i][j]
+                if symbol == Piece.PINK_X:
+                    print(PINK + ' X', ENDC, end="")
+                elif symbol == Piece.GREEN_X:
+                    print(GREEN + ' X', ENDC, end="")
+                elif symbol == Piece.PINK_O:
+                    print(PINK + ' O', ENDC, end="")
+                elif symbol == Piece.GREEN_O:
+                    print(GREEN + ' O', ENDC, end="")
+                else:
+                    print('   ', end="")
+
+                if j == TABLE_HEIGHT - 1:
+                    print(" |")
+                else:
+                    print(" |", end="")
+
+        print("-" * CELL_WIDTH * TABLE_WIDTH)
 
     def scoring(self):
         return 100 if self.win() else 0
 
 
-ai = Negamax(13)
+ai = Negamax(2)
 game = XOBrainer([Human_Player(), AI_Player(ai)])
 history = game.play()
