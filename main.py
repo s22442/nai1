@@ -32,8 +32,11 @@ PLAYER_2_PIECE_POOL = [
 class XOBrainer(TwoPlayerGame):
     def __init__(self, players):
         self.players = players
-        self.nplayer = 1
-        self.table = [[] for _ in range(TABLE_WIDTH)]
+        self.current_player = 1
+        self.table = [
+            [None for _ in range(TABLE_HEIGHT)]
+            for _ in range(TABLE_WIDTH)
+        ]
         self.player1_piece_pool = PLAYER_1_PIECE_POOL
         self.player2_piece_pool = PLAYER_2_PIECE_POOL
 
@@ -84,7 +87,7 @@ class XOBrainer(TwoPlayerGame):
     def possible_moves(self):
         available_colors = []
 
-        if self.nplayer == 1:
+        if self.current_player == 1:
             if self.player1_piece_pool.count(Piece.PINK_O):
                 available_colors.append('P')
             if self.player1_piece_pool.count(Piece.GREEN_O):
@@ -112,17 +115,17 @@ class XOBrainer(TwoPlayerGame):
 
         piece = (
             Piece.PINK_O if color == 'P' else Piece.GREEN_O
-        ) if self.nplayer == 1 else (
+        ) if self.current_player == 1 else (
             Piece.PINK_X if color == 'P' else Piece.GREEN_X
         )
 
         self.table[i][j] = piece
 
-        pool = self.player1_piece_pool if self.nplayer == 1 else self.player2_piece_pool
+        pool = self.player1_piece_pool if self.current_player == 1 else self.player2_piece_pool
         pool.remove(piece)
 
         if len(pool) == 0:
-            if self.nplayer == 1:
+            if self.current_player == 1:
                 self.player1_piece_pool = PLAYER_1_PIECE_POOL
             else:
                 self.player2_piece_pool = PLAYER_2_PIECE_POOL
@@ -130,12 +133,18 @@ class XOBrainer(TwoPlayerGame):
     def win(self):
         wining_pieces = [
             Piece.PINK_O, Piece.PINK_X
-        ] if self.nplayer == 1 else [
+        ] if self.current_player == 1 else [
             Piece.GREEN_O, Piece.GREEN_X
         ]
 
         for combination in self.winning_combinations:
-            if all(self.table[i][j] in wining_pieces for i, j in combination):
+            win = True
+            for pos in combination:
+                if self.table[pos[0]][pos[1]] not in wining_pieces:
+                    win = False
+                    break
+
+            if win:
                 return True
 
         return False
