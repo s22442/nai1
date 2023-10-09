@@ -146,16 +146,17 @@ class XOBrainer(TwoPlayerGame):
             [Piece.GREEN_X, Piece.PINK_X],
         ]
 
-        for combination in self.winning_combinations:
-            win = True
-            for pos in combination:
-                for wining_piece in wining_piece_groups:
-                    if self.table[pos[0]][pos[1]] not in wining_piece:
+        for wining_pieces in wining_piece_groups:
+            for combination in self.winning_combinations:
+                win = True
+
+                for pos in combination:
+                    if self.table[pos[0]][pos[1]] not in wining_pieces:
                         win = False
                         break
 
-            if win:
-                return True
+                if win:
+                    return True
 
         return False
 
