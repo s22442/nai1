@@ -2,14 +2,16 @@ from enum import Enum
 
 from easyAI import AI_Player, Human_Player, Negamax, TwoPlayerGame
 
+# game configuration
 TABLE_WIDTH = 10
 TABLE_HEIGHT = 10
-CELL_WIDTH = 5
 WINNING_STRIKE = 5
 
-GREEN = '\033[32m'  # Green Text
-PINK = '\033[35m'  # Pink Text
-ENDC = '\033[m'  # reset to the defaults
+# displaying game state
+CELL_WIDTH = 5
+GREEN_COLOR = '\033[32m'
+PINK_COLOR = '\033[35m'
+RESET_COLOR = '\033[m'
 
 
 class Piece(Enum):
@@ -136,18 +138,21 @@ class XOBrainer(TwoPlayerGame):
                 self.player2_piece_pool = PLAYER_2_PIECE_POOL.copy()
 
     def win(self):
-        wining_pieces = [
-            Piece.PINK_O, Piece.PINK_X
+        wining_piece_groups = [
+            [Piece.PINK_O, Piece.PINK_X],
+            [Piece.PINK_O, Piece.GREEN_O],
         ] if self.current_player == 1 else [
-            Piece.GREEN_O, Piece.GREEN_X
+            [Piece.GREEN_O, Piece.GREEN_X],
+            [Piece.GREEN_X, Piece.PINK_X],
         ]
 
         for combination in self.winning_combinations:
             win = True
             for pos in combination:
-                if self.table[pos[0]][pos[1]] not in wining_pieces:
-                    win = False
-                    break
+                for wining_piece in wining_piece_groups:
+                    if self.table[pos[0]][pos[1]] not in wining_piece:
+                        win = False
+                        break
 
             if win:
                 return True
@@ -157,23 +162,42 @@ class XOBrainer(TwoPlayerGame):
     def is_over(self):
         return self.win()
 
+    def _print_piece(self, piece: Piece):
+        match piece:
+            case Piece.PINK_X:
+                print(PINK_COLOR + 'X', RESET_COLOR, end="")
+            case Piece.GREEN_X:
+                print(GREEN_COLOR + 'X', RESET_COLOR, end="")
+            case Piece.PINK_O:
+                print(PINK_COLOR + 'O', RESET_COLOR, end="")
+            case Piece.GREEN_O:
+                print(GREEN_COLOR + 'O', RESET_COLOR, end="")
+
     def show(self):
         print("GAME STATE:")
+
+        print("Player 1 pieces: ", end="")
+        for piece in self.player1_piece_pool:
+            self._print_piece(piece)
+        print()
+
+        print("Player 2 pieces: ", end="")
+        for piece in self.player2_piece_pool:
+            self._print_piece(piece)
+        print()
+
         print("-" * CELL_WIDTH * TABLE_WIDTH)
         for i in range(TABLE_WIDTH):
             print("|", end="")
             for j in range(TABLE_HEIGHT):
                 symbol = self.table[i][j]
-                if symbol == Piece.PINK_X:
-                    print(PINK + ' X', ENDC, end="")
-                elif symbol == Piece.GREEN_X:
-                    print(GREEN + ' X', ENDC, end="")
-                elif symbol == Piece.PINK_O:
-                    print(PINK + ' O', ENDC, end="")
-                elif symbol == Piece.GREEN_O:
-                    print(GREEN + ' O', ENDC, end="")
+
+                print(' ', end="")
+
+                if symbol == None:
+                    print('  ', end="")
                 else:
-                    print('   ', end="")
+                    self._print_piece(symbol)
 
                 if j == TABLE_HEIGHT - 1:
                     print(" |")
