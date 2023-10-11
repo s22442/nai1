@@ -15,7 +15,7 @@ To run this project make sure that you:
 `pip install easyAI`,
 - download and install colorama with the following command via the terminal:
 `pip install colorama`
-- and launch the project from your favourite IDE or with the following command:
+- and launch the project from your favorite IDE or with the following command:
 `python main.py`
 - play the game by passing your next move in a following convention:
 example: P43,
