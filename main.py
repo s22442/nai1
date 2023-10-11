@@ -5,11 +5,18 @@
 
     Link to XOBrainer's instructions: https://xobrainer.com/images/pdf/XOBrainer_instructions_english_web.pdf
 
-    To run this project on Windows make sure that you:
-    - download the latest version of python,
-    - download and install easyAI with the following command via cmd:
-        "sudo pip install easyAI",
-    - and launch the project from your favourite IDE
+    To run this project make sure that you:
+    - download at least a 3.10 version of Python
+    - download and install easyAI with the following command via the terminal:
+        "pip install easyAI",
+    - download and install colorama with the following command via the terminal:
+        "pip install colorama"
+    - and launch the project from your favourite IDE or with the following command:
+        "python main.py"
+    - play the game by passing your next move in a following convention:
+        - example: P43,
+            where the letter (either P-ink, G-reen) stands for piece's colour and the first and second digit
+            stands accordingly for the board's row (4) and the column (3).
 
     Project created by:
         Kajetan Welc
@@ -17,6 +24,10 @@
 """
 
 from enum import Enum
+
+from colorama import init
+from colorama import Fore
+from colorama import Style
 
 from easyAI import AI_Player, Human_Player, Negamax, TwoPlayerGame
 
@@ -27,10 +38,6 @@ WINNING_STRIKE = 5
 
 # displaying game state
 CELL_WIDTH = 5
-GREEN_COLOR = '\033[32m'
-PINK_COLOR = '\033[35m'
-RESET_COLOR = '\033[m'
-
 
 class Piece(Enum):
     """
@@ -80,7 +87,7 @@ class XOBrainer(TwoPlayerGame):
         -------
         _build_winning_combinations:
             Method used to generate all possible winning combinations on the board.
-        """
+    """
     def __init__(self, players):
         """
             Method used to initialize and construct the necessary attributes for the XOBrainer object.
@@ -108,6 +115,7 @@ class XOBrainer(TwoPlayerGame):
         self.player2_piece_pool = PLAYER_2_PIECE_POOL.copy()
 
         self._build_winning_combinations()
+        init()  # used to initialize colorama
 
     def _build_winning_combinations(self):
         """
@@ -304,13 +312,13 @@ class XOBrainer(TwoPlayerGame):
         """
         match piece:
             case Piece.PINK_X:
-                print(PINK_COLOR + 'X', RESET_COLOR, end="")
+                print(Fore.MAGENTA + 'X', Style.RESET_ALL, end="")
             case Piece.GREEN_X:
-                print(GREEN_COLOR + 'X', RESET_COLOR, end="")
+                print(Fore.GREEN + 'X', Style.RESET_ALL, end="")
             case Piece.PINK_O:
-                print(PINK_COLOR + 'O', RESET_COLOR, end="")
+                print(Fore.MAGENTA + 'O', Style.RESET_ALL, end="")
             case Piece.GREEN_O:
-                print(GREEN_COLOR + 'O', RESET_COLOR, end="")
+                print(Fore.GREEN + 'O', Style.RESET_ALL, end="")
 
     def show(self):
         """
